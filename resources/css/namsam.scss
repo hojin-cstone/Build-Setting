@@ -1,0 +1,22 @@
+@charset "utf-8";
+@import "mixin.scss";
+
+.namsam { display:block; }
+
+html {
+	 @if $fontType == 1 { font-size : $fontSize; }
+}
+
+@for $i from 1 through 3 {
+    .item#{$i}{
+        width: $i * 100px;
+
+        .tit {
+        	font-size:$fontSize + $i;
+        }
+    }
+}
+
+p {
+	@include mixinName(20px, blue);
+}

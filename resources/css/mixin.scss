@@ -1,0 +1,7 @@
+$fontType : 1;
+$fontSize : 15px;
+
+@mixin mixinName($margin, $color){
+		margin:$margin;
+		color:$color;
+}
