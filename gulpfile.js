@@ -54,8 +54,8 @@ gulp.task('server', ['html', 'css', 'img', 'js'], function () {
 	gulp
 		.src(dist + '/') // ROOT설정
 		.pipe(plugins.webserver({
-			host:'114.52.63.67', // HOST
-			port:'1500', // PORT
+			host:'${serverHost}', // HOST
+			port:'${serverPort}', // PORT
 			livereload:true // 자동새로고침 사용
 		}));
 
