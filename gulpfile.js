@@ -14,10 +14,15 @@ var dir = {
 		sub : [
 			src + '/*/*.html',
 			'!'+src + '/include/*.html'
+		],
+		jsp : [
+			src + '/**/*.html',
+			'!'+src + '/style_guide.html',
+			'!'+src + '/url.html'
 		]
 	},
 	css : {
-		all : src+'/resources/css/**.scss',
+		all : src+'/resources/css/*.scss',
 		lib : src+'/resources/css/lib/normalize.css',
 		common : src+'/resources/css/common.scss',
 		main   : src+'/resources/css/main.scss',
@@ -29,8 +34,7 @@ var dir = {
 	},
 	img : {
 		all : [
-			src+'/resources/images/**/*',
-			'!'+src+'/resources/images/sprite/*'
+			src+'/resources/images/*/*'
 		],
 		sprite : src+'/resources/images/sprite/*'
 	},
@@ -50,8 +54,8 @@ gulp.task('server', ['html', 'css', 'img', 'js'], function () {
 	gulp
 		.src(dist + '/') // ROOT설정
 		.pipe(plugins.webserver({
-			host:'${serverHost}', // HOST
-			port:'${serverPort}', // PORT
+			host:'114.52.63.67', // HOST
+			port:'1500', // PORT
 			livereload:true // 자동새로고침 사용
 		}));
 
@@ -97,7 +101,7 @@ gulp.task('html', ['html_sub'], function () {
 		.pipe(gulp.dest(dist + '/'));
 }).task('jsp', function () {
 	return gulp
-		.src(dir.html.all)
+		.src(dir.html.jsp)
 		.pipe(plugins.htmlReplace({
 			'css_normalize':'/resources/css/lib/normalize.min.css',
 			'css_common':'/resources/css/common.min.css',
@@ -107,10 +111,11 @@ gulp.task('html', ['html_sub'], function () {
 			'js_function':'/resources/js/function.min.js',
 			'js_project':'/resources/js/project.min.js'
 	    }))
+		.pipe(plugins.replace(/\.html/g, '.jsp'))
 		.pipe(plugins.replace(/@@include((.*\/include\/config.*))/g, '<%@ include file="/include/config.jsp" %>'))
 		.pipe(plugins.replace(/@@include((.*\/include\/header.*))/g, '<%@ include file="/include/header.jsp" %>'))
 		.pipe(plugins.replace(/@@include((.*\/include\/footer.*))/g, '<%@ include file="/include/footer.jsp" %>'))
-		.pipe(plugins.rename({
+		.pipe(plugins.rename({ // .jsp로 번경
 			extname: ".jsp"
 		}))
 		.pipe(gulp.dest(dev + '/'));
@@ -120,7 +125,6 @@ gulp.task('html', ['html_sub'], function () {
 gulp.task('css',['cssCommon', 'cssSub'], function () {
 	return gulp
 		.src(dir.css.lib) // CSS 경로
-
 		.pipe(plugins.sass()) // SASS -> CSS 컴파일
 		.pipe(sourcemaps.init()) // 소스맵 생성
 		.pipe(plugins.rename({
@@ -133,7 +137,6 @@ gulp.task('css',['cssCommon', 'cssSub'], function () {
 }).task('cssCommon', function () {
 	return gulp
 		.src([dir.css.common, dir.css.main])
-
 		.pipe(plugins.sass())
 		.pipe(sourcemaps.init())
 		.pipe(plugins.autoprefixer({
@@ -150,14 +153,13 @@ gulp.task('css',['cssCommon', 'cssSub'], function () {
 }).task('cssSub', function () {
 	return gulp
 		.src(dir.css.sub)
-
 		.pipe(plugins.sass())
 		.pipe(sourcemaps.init())
 		.pipe(plugins.autoprefixer({
             browsers: ['last 4 versions'],
             cascade: false
         }))
-		.pipe(plugins.concat('sub.css')) // 다른 css파일과 sub.css라는 파일명으로 Merge합니다.
+		.pipe(plugins.concat('sub.css')) // css파일을 sub.css라는 파일명으로 Merge합니다.
 		.pipe(plugins.rename({
 			suffix:'.min'
 		}))
@@ -172,8 +174,8 @@ gulp.task('img', ['imgMin'], function () {
 	return gulp
 		.src(dir.img.sprite) // IMAGES 경로
 		.pipe(plugins.spritesmith({ // sprite생성
-			imgName: 'sprite.png',
-			cssName: 'sprite.css'
+			imgName: 'icon.png',
+			cssName: 'icon.css'
 		}))
 		.pipe(gulp.dest(dist+'/resources/images/sprite'))
 		.pipe(gulp.dest(dev+'/resources/images/sprite'));
@@ -186,8 +188,8 @@ gulp.task('img', ['imgMin'], function () {
 				plugins.imagemin.optipng({optimizationLevel: 5}),
 				plugins.imagemin.svgo({plugins: [{removeViewBox: true}]})
 			])) // IMAGE를 optimize합니다.
-        .pipe(gulp.dest(dist+'/resources/images'))
-		.pipe(gulp.dest(dist+'/resources/images'));
+        .pipe(gulp.dest(dist+'/resources/images')) // 이곳에 저장합니다.
+		.pipe(gulp.dest(dev+'/resources/images'));
 });
 
 /* ### JS */
@@ -200,8 +202,8 @@ gulp.task('js', ['jsLib', 'jsLint'], function () {
 		}))
         .pipe(plugins.uglify()) // src에 있는 JS파일을 minify합니다.
 		.pipe(sourcemaps.write('./sourcemaps'))
-    	.pipe(gulp.dest(dist+'/resources/js'))
-		.pipe(gulp.dest(dev+'/resources/js')); // 이곳에 저장합니다.
+    	.pipe(gulp.dest(dist+'/resources/js')) // 이곳에 저장합니다.
+		.pipe(gulp.dest(dev+'/resources/js'));
 }).task('jsLib',function(){
 	return gulp
 	.src(dir.jsLib)
