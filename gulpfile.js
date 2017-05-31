@@ -39,9 +39,9 @@ var dir = {
 	img : {
 			all : [
 					src+'/resources/images/*/*',
-					'!'+src+'/resources/images/sprite/*'
+					'!'+src+'/resources/images/icon/*'
 				],
-			sprite : src+'/resources/images/sprite/*'
+			icon : src+'/resources/images/icon/*'
 		},
 	js : src+'/resources/js/*.js',
 	jsLib : src+'/resources/js/lib/*.js'
@@ -188,7 +188,7 @@ gulp.task('css',['cssLib', 'cssCommon', 'cssSub'], function () {
 /* ### IMAGES */
 gulp.task('img', ['imgSprite', 'imgMin'], function () {
 }).task('imgSprite', function(){
-	var spriteData = gulp.src(dir.img.sprite) // IMAGES 경로
+	var spriteData = gulp.src(dir.img.icon) // IMAGES 경로
 		.pipe(plugins.spritesmith({ // Sprite생성
 				imgName: 'icon.png',
 				cssName: 'icon.min.css',
@@ -205,9 +205,11 @@ gulp.task('img', ['imgSprite', 'imgMin'], function () {
 		.pipe(gulp.dest(dist+'/resources/images/common'))
 		.pipe(gulp.dest(dev+'/resources/images/common'));
 	spriteData.css
+		.pipe(sourcemaps.init())
 		.pipe(plugins.replace(/\icon-/g, '')) // Sprite과정중 생긴 icon Prefix제거
 		.pipe(plugins.replace(/url\(/g, 'url(../images/common/')) // css위치 변경으로 인한 url변경
 		.pipe(plugins.minifyCss())
+		.pipe(sourcemaps.write('./sourcemaps'))
 		.pipe(gulp.dest(dist+'/resources/css'))
 		.pipe(plugins.replace(/\.\./g, '/resources')) // dev에서 절대경로로 변경
 		.pipe(gulp.dest(dev+'/resources/css'));
