@@ -37,10 +37,7 @@ var dir = {
 				]
 		},
 	img : {
-			all : [
-					src+'/resources/images/*/*',
-					'!'+src+'/resources/images/icon/*'
-				],
+			all : src+'/resources/images/*/*',
 			icon : src+'/resources/images/icon/*'
 		},
 	js : src+'/resources/js/*.js',
@@ -61,8 +58,8 @@ gulp.task('server', ['html', 'css', 'img', 'js'], function () {
 	gulp
 		.src(dist + '/') // ROOT설정
 		.pipe(plugins.webserver({
-				host:'114.52.63.67', // HOST
-				port:'1515', // PORT
+				host:'${serverHost}', // HOST
+				port:'${serverPort}', // PORT
 				livereload:true // 자동새로고침 사용
 			}));
 
@@ -215,7 +212,7 @@ gulp.task('img', ['imgSprite', 'imgMin'], function () {
 		.pipe(gulp.dest(dev+'/resources/css'));
 }).task('imgMin', function(){
     return gulp
-		.src(dir.img.all)
+		.src([dir.img.all, '!'+dir.img.icon])
 		.pipe(imagemin([
 				imagemin.gifsicle({interlaced: true}),
 				imagemin.jpegtran({progressive: true}),
@@ -240,9 +237,9 @@ gulp.task('js', ['jsLib', 'jsLint'], function () {
 		.pipe(gulp.dest(dev+'/resources/js'));
 }).task('jsLib',function(){
 	return gulp
-	.src(dir.jsLib)
-	.pipe(gulp.dest(dist+'/resources/js/lib'))
-	.pipe(gulp.dest(dev+'/resources/js/lib'));
+		.src(dir.jsLib)
+		.pipe(gulp.dest(dist+'/resources/js/lib'))
+		.pipe(gulp.dest(dev+'/resources/js/lib'));
 }).task('jsLint', function () { // JS 유효성 검사
     return gulp
 		.src(dir.js)
@@ -262,7 +259,7 @@ gulp.task('git', ['commit', 'gitPush'], function(){
 }).task('commit', function(){
 	return gulp.src(src+'/**')
 		.pipe(plugins.git.add()) // 수정된 파일 추가
-		.pipe(plugins.git.commit(undefined, { // 수정된 파일 추가 확정
+		.pipe(plugins.git.commit(undefined, { // 수정된 파일 커밋
 			args: '-m "${branch}"',
 			disableMessageRequirement: true
 		}));
@@ -311,7 +308,7 @@ gulp.task('git', ['commit', 'gitPush'], function(){
 });
 
 /* ### Gulp실행 */
-gulp.task('default', ['server'], function(){
+gulp.task('build', ['server'], function(){
 	console.log(
 		'/**********************\n\n'+
 		'      SERVER RUN...    \n\n'+
