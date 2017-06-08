@@ -23,7 +23,7 @@ var dir = {
 		},
 	css : {
 			all : src+'/resources/css/**/*',
-			lib : src+'/resources/css/lib/*.css',
+			lib : src+'/resources/css/lib/*',
 			common : src+'/resources/css/common.scss',
 			main   : src+'/resources/css/main.scss',
 			sub    : [
@@ -38,7 +38,7 @@ var dir = {
 		},
 	img : {
 			all : src+'/resources/images/*/*',
-			icon : src+'/resources/images/icon/*'
+			icon : src+'/resources/images/common/icon/*'
 		},
 	js : src+'/resources/js/*.js',
 	jsLib : src+'/resources/js/lib/*.js'
@@ -113,7 +113,7 @@ gulp.task('html', ['htmlMain', 'htmlSub', 'htmlDev'], function () {
 				'css_normalize':'/resources/css/lib/normalize.min.css',
 				'css_common':'/resources/css/common.min.css',
 				'css_icon':'/resources/css/icon.min.css',
-				'css_main':'./resources/css/main.min.css',
+				'css_main':'/resources/css/main.min.css',
 				'css_sub':'/resources/css/sub.min.css',
 				'js_jquery':'/resources/js/lib/jquery.min.js',
 				'js_html5shiv':'/resources/js/lib/html5shiv.min.js',
@@ -121,10 +121,10 @@ gulp.task('html', ['htmlMain', 'htmlSub', 'htmlDev'], function () {
 				'js_project':'/resources/js/project.min.js'
 		    }))
 		.pipe(plugins.replace(/\.*\//g, '/')) // 모든 상대경로 -> 절대경로 변경
-		.pipe(plugins.replace(/\.html/g, '.jsp')) // 링크 확장자를 html -> jsp로 변경
-		.pipe(plugins.replace(/@@include((.*\/include\/config.*))/g, '<%@ include file="/include/config.jsp" %>')) // gulp인클루드 -> jsp인클루드로 변경
-		.pipe(plugins.replace(/@@include((.*\/include\/header.*))/g, '<%@ include file="/include/header.jsp" %>'))
-		.pipe(plugins.replace(/@@include((.*\/include\/footer.*))/g, '<%@ include file="/include/footer.jsp" %>'))
+		.pipe(plugins.replace(/\.html/g, '')) // 링크 확장자를 html -> jsp로 변경
+		.pipe(plugins.replace(/@@include((.*\/include\/config.*))/g, '<%@ include file="/include/config" %>')) // gulp인클루드 -> jsp인클루드로 변경
+		.pipe(plugins.replace(/@@include((.*\/include\/header.*))/g, '<%@ include file="/include/header" %>'))
+		.pipe(plugins.replace(/@@include((.*\/include\/footer.*))/g, '<%@ include file="/include/footer" %>'))
 		.pipe(plugins.rename({ // .jsp로 번경
 				extname: ".jsp"
 			}))
@@ -212,7 +212,7 @@ gulp.task('img', ['imgSprite', 'imgMin'], function () {
 		.pipe(gulp.dest(dev+'/resources/css'));
 }).task('imgMin', function(){
     return gulp
-		.src([dir.img.all, '!'+dir.img.icon])
+		.src([dir.img.all, '!'+src+'/resources/images/common/icon'])
 		.pipe(imagemin([
 				imagemin.gifsicle({interlaced: true}),
 				imagemin.jpegtran({progressive: true}),
