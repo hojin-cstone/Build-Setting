@@ -51,7 +51,7 @@ var plugins = require('gulp-load-plugins')(), // 설치한 플러그인들을 pl
 	imagemin = require('gulp-imagemin'),
 	jslint = require('gulp-jslint-simple'),
 	FileCache = require("gulp-file-cache"),
-	fileCache = new FileCache();
+	fileCache = new FileCache('.file-cache');
 
 /* ### Server */
 gulp.task('server', ['html', 'css', 'img', 'js'], function () {
@@ -122,9 +122,8 @@ gulp.task('html', ['htmlMain', 'htmlSub', 'htmlDev'], function () {
 		    }))
 		.pipe(plugins.replace(/\.*\//g, '/')) // 모든 상대경로 -> 절대경로 변경
 		.pipe(plugins.replace(/\.html/g, '')) // 링크 확장자를 html -> jsp로 변경
-		.pipe(plugins.replace(/@@include((.*\/include\/config.*))/g, '<%@ include file="/include/config" %>')) // gulp인클루드 -> jsp인클루드로 변경
-		.pipe(plugins.replace(/@@include((.*\/include\/header.*))/g, '<%@ include file="/include/header" %>'))
-		.pipe(plugins.replace(/@@include((.*\/include\/footer.*))/g, '<%@ include file="/include/footer" %>'))
+		.pipe(plugins.replace(/@@include\(\'\.*\//g, '<%@ include file="/')) // gulp인클루드 -> jsp인클루드로 변경
+		.pipe(plugins.replace(/\'\)/g, '" %>')) // gulp인클루드 -> jsp인클루드로 변경
 		.pipe(plugins.rename({ // .jsp로 번경
 				extname: ".jsp"
 			}))
@@ -283,14 +282,14 @@ gulp.task('git', ['commit', 'gitPush'], function(){
 									/* ### FTP */
 									gulp.src(dist+'/**')
 										.pipe(fileCache.filter()) // 수정된 파일만 업로드
+										.pipe(fileCache.cache())
 										.pipe(plugins.sftp({
 											host: '${ftpHost}',
 											port: '${ftpPort}',
 											user: '${ftpUser}',
 											pass: '${ftpPass}',
 											remotePath: '${ftpRemotePath}'
-										}))
-										.pipe(fileCache.cache());
+										}));
 
 									console.log(
 										'/*****************************\n\n'+
