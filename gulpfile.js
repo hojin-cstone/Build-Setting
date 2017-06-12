@@ -254,15 +254,14 @@ gulp.task('js', ['jsLib', 'jsLint'], function () {
 });
 
 /* ### Git */
-gulp.task('git', ['commit', 'gitPush'], function(){
-}).task('commit', function(){
+gulp.task('git', ['push'], function(){
 	return gulp.src(src+'/**')
 		.pipe(plugins.git.add()) // 수정된 파일 추가
 		.pipe(plugins.git.commit(undefined, { // 수정된 파일 커밋
 			args: '-m "${branch}"',
 			disableMessageRequirement: true
 		}));
-}).task('gitPush', function(){
+}).task('push', function(){
 	plugins.git.push('origin', '${branch}', function (err) { // 파일 올리기
 		if (err) throw err;
 		plugins.git.checkout('master', function (err) { // 브렌치 변경
@@ -314,3 +313,6 @@ gulp.task('build', ['server'], function(){
 		'**********************/'
 	);
 });
+
+/* ### Git실행 */
+gulp.task('commit', ['git']);
