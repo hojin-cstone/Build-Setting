@@ -49,9 +49,7 @@ var plugins = require('gulp-load-plugins')(), // 설치한 플러그인들을 pl
 	sourcemaps = require('gulp-sourcemaps'), // plugins로 사용안되는플러그인은 따로 추가
 	buffer = require('vinyl-buffer'),
 	imagemin = require('gulp-imagemin'),
-	jslint = require('gulp-jslint-simple'),
-	FileCache = require("gulp-file-cache"),
-	fileCache = new FileCache('.file-cache');
+	jslint = require('gulp-jslint-simple');
 
 /* ### Server */
 gulp.task('server', ['html', 'css', 'img', 'js'], function () {
@@ -183,7 +181,7 @@ gulp.task('css',['cssLib', 'cssCommon', 'cssSub'], function () {
 
 /* ### IMAGES */
 gulp.task('img', ['imgSprite', 'imgMin'], function () {
-}).task('imgSprite', function(){
+}).task('imgSprite', function () {
 	var spriteData = gulp.src(dir.img.icon) // IMAGES 경로
 		.pipe(plugins.spritesmith({ // Sprite생성
 				imgName: 'icon.png',
@@ -209,7 +207,7 @@ gulp.task('img', ['imgSprite', 'imgMin'], function () {
 		.pipe(gulp.dest(dist+'/resources/css'))
 		.pipe(plugins.replace(/\.\./g, '/resources')) // dev에서 절대경로로 변경
 		.pipe(gulp.dest(dev+'/resources/css'));
-}).task('imgMin', function(){
+}).task('imgMin', function () {
     return gulp
 		.src([dir.img.all, '!'+src+'/resources/images/common/icon'])
 		.pipe(imagemin([
@@ -234,7 +232,7 @@ gulp.task('js', ['jsLib', 'jsLint'], function () {
 		.pipe(sourcemaps.write('./sourcemaps'))
     	.pipe(gulp.dest(dist+'/resources/js'))
 		.pipe(gulp.dest(dev+'/resources/js'));
-}).task('jsLib',function(){
+}).task('jsLib',function () {
 	return gulp
 		.src(dir.jsLib)
 		.pipe(gulp.dest(dist+'/resources/js/lib'))
@@ -254,14 +252,15 @@ gulp.task('js', ['jsLib', 'jsLint'], function () {
 });
 
 /* ### Git */
-gulp.task('git', ['push'], function(){
+gulp.task('git', ['push'], function () {
 	return gulp.src(src+'/**')
 		.pipe(plugins.git.add()) // 수정된 파일 추가
 		.pipe(plugins.git.commit(undefined, { // 수정된 파일 커밋
 			args: '-m "${branch}"',
 			disableMessageRequirement: true
 		}));
-}).task('push', function(){
+})
+.task('push', function () {
 	plugins.git.push('origin', '${branch}', function (err) { // 파일 올리기
 		if (err) throw err;
 		plugins.git.checkout('master', function (err) { // 브렌치 변경
@@ -275,27 +274,15 @@ gulp.task('git', ['push'], function(){
 							if (err) throw err;
 							plugins.git.merge('master', function (err) { // 파일 합치기
 								if (err) throw err;
-								plugins.git.push('origin', '${branch}', function (err) {  // 파일 올리기
-									if (err) throw err;
+								plugins.git.push('origin', '${branch}',  // 파일 올리기
+									plugins.shell.task(['gulp build']) // GULP BUILD
+								);
 
-									/* ### FTP */
-									gulp.src(dist+'/**')
-										.pipe(fileCache.filter()) // 수정된 파일만 업로드
-										.pipe(fileCache.cache())
-										.pipe(plugins.sftp({
-											host: '${ftpHost}',
-											port: '${ftpPort}',
-											user: '${ftpUser}',
-											pass: '${ftpPass}',
-											remotePath: '${ftpRemotePath}'
-										}));
-
-									console.log(
-										'/*****************************\n\n'+
-										'       COMMIT 완료.      \n\n'+
-										'*****************************/'
-									);
-								});
+								console.log(
+									'/*****************************\n\n'+
+									'       COMMIT 완료.      \n\n'+
+									'*****************************/'
+								);
 							});
 						});
 					});
@@ -305,14 +292,30 @@ gulp.task('git', ['push'], function(){
 	});
 });
 
-/* ### Gulp실행 */
-gulp.task('build', ['server'], function(){
-	console.log(
-		'/**********************\n\n'+
-		'      SERVER RUN...    \n\n'+
-		'**********************/'
-	);
+/* ### FTP */
+gulp.task('ftp', function () {
+	gulp.src(dist+'/**')
+		.pipe(plugins.sftp({
+			host: '${ftpHost}',
+			port: '${ftpPort}',
+			user: '${ftpUser}',
+			pass: '${ftpPass}',
+			remotePath: '${ftpRemotePath}',
+			callback : function () {
+				console.log(
+					'/*****************************\n\n'+
+					'       FTP UPLOAD 완료.      \n\n'+
+					'*****************************/'
+				);
+				console.log(
+					'/*****************************\n\n'+
+					'       SERVER RUN...      \n\n'+
+					'*****************************/'
+				);
+			}
+		}))
 });
 
-/* ### Git실행 */
-gulp.task('commit', ['git']);
+/* ### Gulp실행 */
+gulp.task('default', ['git']);
+gulp.task('build', ['server'], plugins.shell.task(['gulp ftp']));
