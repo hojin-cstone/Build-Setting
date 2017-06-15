@@ -69,7 +69,11 @@ gulp.task('server', ['html', 'css', 'img', 'js'], function () {
 });
 
 /* ### HTML */
-gulp.task('html', ['htmlMain', 'htmlSub', 'htmlDev'], function () {
+gulp.task('html', ['htmlClean'], plugins.shell.task(['gulp htmlBuild']));
+gulp.task('htmlClean', function () {
+    return gulp.src([dist + '/**/*.html', dev + '/**/*.${developFormat}'])
+        .pipe(plugins.clean());
+}).task('htmlBuild', ['htmlMain', 'htmlSub', 'htmlDev'], function () {
  }).task('htmlMain', function () {
 	return gulp
 		.src(dir.html.main)
@@ -119,17 +123,17 @@ gulp.task('html', ['htmlMain', 'htmlSub', 'htmlDev'], function () {
 				'js_project':'/resources/js/project.min.js'
 		    }))
 		.pipe(plugins.replace(/\.*\//g, '/')) // 모든 상대경로 -> 절대경로 변경
-		.pipe(plugins.replace(/\.html/g, '')) // 링크 확장자를 html -> jsp로 변경
-		.pipe(plugins.replace(/@@include\(\'\.*\//g, '<%@ include file="/')) // gulp인클루드 -> jsp인클루드로 변경
-		.pipe(plugins.replace(/\'\)/g, '" %>')) // gulp인클루드 -> jsp인클루드로 변경
-		.pipe(plugins.rename({ // .jsp로 번경
-				extname: ".jsp"
+		.pipe(plugins.replace(/\.html/g, '.${developFormat}')) // 링크 확장자를 html -> ${developFormat}로 변경
+		.pipe(plugins.replace(/@@include\(\'\.*\//g, '${includeStart}')) // gulp인클루드 -> ${developFormat}인클루드로 변경
+		.pipe(plugins.replace(/\'\)/g, '${includeEnd}')) // gulp인클루드 -> ${developFormat} 변경
+		.pipe(plugins.rename({ // .${developFormat} 번경
+				extname: ".${developFormat}"
 			}))
 		.pipe(gulp.dest(dev + '/'));
 });
 
 /* ### CSS */
-gulp.task('css',['cssLib', 'cssCommon', 'cssSub'], function () {
+gulp.task('css',['cssClean', 'cssLib', 'cssCommon', 'cssSub'], function () {
 }).task('cssLib', function () {
 	return gulp
 		.src(dir.css.lib) // CSS 경로
@@ -177,10 +181,13 @@ gulp.task('css',['cssLib', 'cssCommon', 'cssSub'], function () {
 		.pipe(gulp.dest(dist+'/resources/css'))
 		.pipe(plugins.replace(/\.\./g, '/resources')) // dev에서 절대경로로 변경
 		.pipe(gulp.dest(dev+'/resources/css'));
+}).task('cssClean', function () {
+    gulp.src([dist + '/resources/css/*.css', dev + '/resources/css/*.css'])
+        .pipe(plugins.clean());
 });
 
 /* ### IMAGES */
-gulp.task('img', ['imgSprite', 'imgMin'], function () {
+gulp.task('img', ['imgClean', 'imgSprite', 'imgMin'], function () {
 }).task('imgSprite', function () {
 	var spriteData = gulp.src(dir.img.icon) // IMAGES 경로
 		.pipe(plugins.spritesmith({ // Sprite생성
@@ -218,10 +225,13 @@ gulp.task('img', ['imgSprite', 'imgMin'], function () {
 			]))
         .pipe(gulp.dest(dist+'/resources/images'))
 		.pipe(gulp.dest(dev+'/resources/images'));
+}).task('imgClean', function () {
+    gulp.src([dist + '/resources/images/*/*', dev + '/resources/images/*/*'])
+        .pipe(plugins.clean());
 });
 
 /* ### JS */
-gulp.task('js', ['jsLib', 'jsLint'], function () {
+gulp.task('js', ['jsClean', 'jsLib', 'jsLint'], function () {
 	return gulp
 		.src(dir.js) // JS경로
 		.pipe(sourcemaps.init())
@@ -249,6 +259,9 @@ gulp.task('js', ['jsLib', 'jsLint'], function () {
 	            // example of using a JSHint reporter
 	            reporter: require('jshint-stylish').reporter
 	        }));
+}).task('jsClean', function () {
+    gulp.src([dist + '/resources/js/*.js', dev + '/resources/js/*.js'])
+        .pipe(plugins.clean());
 });
 
 /* ### Git */
