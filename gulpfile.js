@@ -124,8 +124,8 @@ gulp.task('htmlClean', function () {
 		    }))
 		.pipe(plugins.replace(/\.*\//g, '/')) // 모든 상대경로 -> 절대경로 변경
 		.pipe(plugins.replace(/\.html/g, '.${developFormat}')) // 링크 확장자를 html -> ${developFormat}로 변경
-		.pipe(plugins.replace(/@@include\(\'\.*\//g, '${includeStart} ${includeTxt} ${includeFile}')) // gulp인클루드 -> ${developFormat}인클루드로 변경
-		.pipe(plugins.replace(/\'\)/g, ' ${includeEnd}')) // gulp인클루드 -> ${developFormat} 변경
+		.pipe(plugins.replace(/@@include\(\'\.*\//g, '${includeStart} ${includeTxt} ${includePathStart}')) // gulp인클루드 -> ${developFormat}인클루드로 변경
+		.pipe(plugins.replace(/\'\)/g, '${includePathEnd} ${includeEnd}')) // gulp인클루드 -> ${developFormat} 변경
 		.pipe(plugins.rename({ // .${developFormat} 번경
 				extname: ".${developFormat}"
 			}))
