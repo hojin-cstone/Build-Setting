@@ -331,15 +331,4 @@ gulp.task('ftp', function () {
 
 /* ### Gulp실행 */
 gulp.task('default', ['git']);
-var ftpState = ${ftpHost};
-if (ftpState === '') {
-	gulp.task('build', ['server'], function () {
-		console.log(
-			'/*****************************\n\n'+
-			'       SERVER RUN...      \n\n'+
-			'*****************************/'
-		);
-	});
-} else {
-	gulp.task('build', ['server'], plugins.shell.task(['gulp ftp']));
-}
+gulp.task('build', ['server'], ${ftpState});
