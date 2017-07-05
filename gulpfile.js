@@ -13,7 +13,7 @@ var dir = {
 				],
 			sub : [
 					src + '/*/*.html',
-					'!'+src + '/include/*.html'
+					'!'+src + '/inCom/*.html'
 				],
 			dev : [
 					src + '/**/*.html',
@@ -22,26 +22,26 @@ var dir = {
 				]
 		},
 	css : {
-			all : src+'/resources/css/**/*',
-			lib : src+'/resources/css/lib/*',
-			common : src+'/resources/css/common.scss',
-			main   : src+'/resources/css/main.scss',
+			all : src+'/pjtCom/css/**/*',
+			lib : src+'/pjtCom/css/lib/*',
+			common : src+'/pjtCom/css/common.scss',
+			main   : src+'/pjtCom/css/main.scss',
 			sub    : [
-					src+'/resources/css/*.scss',
-					'!'+src+'/resources/css/common.scss',
-					'!'+src+'/resources/css/main.scss',
-					'!'+src+'/resources/css/icon.scss'
+					src+'/pjtCom/css/*.scss',
+					'!'+src+'/pjtCom/css/common.scss',
+					'!'+src+'/pjtCom/css/main.scss',
+					'!'+src+'/pjtCom/css/icon.scss'
 				],
 			dev    : [
-					src+'/resources/css/*.scss'
+					src+'/pjtCom/css/*.scss'
 				]
 		},
 	img : {
-			all : src+'/resources/images/*/*',
-			icon : src+'/resources/images/common/icon/*'
+			all : src+'/pjtCom/images/*/*',
+			icon : src+'/pjtCom/images/common/icon/*'
 		},
-	js : src+'/resources/js/*.js',
-	jsLib : src+'/resources/js/lib/*.js'
+	js : src+'/pjtCom/js/*.js',
+	jsLib : src+'/pjtCom/js/lib/*.js'
 };
 
 /* ### 플러그인 */
@@ -81,14 +81,14 @@ gulp.task('htmlClean', function () {
 				prefix: '@@',
 			}))
 		.pipe(plugins.htmlReplace({
-				'css_normalize':'./resources/css/lib/normalize.min.css',
-				'css_common':'./resources/css/common.min.css',
-				'css_icon':'./resources/css/icon.min.css',
-				'css_main':'./resources/css/main.min.css',
-				'js_jquery':'./resources/js/lib/jquery.min.js',
-				'js_html5shiv':'./resources/js/lib/html5shiv.min.js',
-				'js_function':'./resources/js/function.min.js',
-				'js_project':'./resources/js/project.min.js'
+				'css_normalize':'./pjtCom/css/lib/normalize.min.css',
+				'css_common':'./pjtCom/css/common.min.css',
+				'css_icon':'./pjtCom/css/icon.min.css',
+				'css_main':'./pjtCom/css/main.min.css',
+				'js_jquery':'./pjtCom/js/lib/jquery.min.js',
+				'js_html5shiv':'./pjtCom/js/lib/html5shiv.min.js',
+				'js_function':'./pjtCom/js/function.min.js',
+				'js_project':'./pjtCom/js/project.min.js'
 		    }))
 		.pipe(gulp.dest(dist + '/'));
 }).task('htmlSub', function () {
@@ -98,29 +98,29 @@ gulp.task('htmlClean', function () {
 				prefix: '@@',
 			}))
 		.pipe(plugins.htmlReplace({
-				'css_normalize':'../resources/css/lib/normalize.min.css',
-				'css_common':'../resources/css/common.min.css',
-				'css_icon':'../resources/css/icon.min.css',
-				'css_sub':'../resources/css/sub.min.css',
-				'js_jquery':'../resources/js/lib/jquery.min.js',
-				'js_html5shiv':'../resources/js/lib/html5shiv.min.js',
-				'js_function':'../resources/js/function.min.js',
-				'js_project':'../resources/js/project.min.js'
+				'css_normalize':'../pjtCom/css/lib/normalize.min.css',
+				'css_common':'../pjtCom/css/common.min.css',
+				'css_icon':'../pjtCom/css/icon.min.css',
+				'css_sub':'../pjtCom/css/sub.min.css',
+				'js_jquery':'../pjtCom/js/lib/jquery.min.js',
+				'js_html5shiv':'../pjtCom/js/lib/html5shiv.min.js',
+				'js_function':'../pjtCom/js/function.min.js',
+				'js_project':'../pjtCom/js/project.min.js'
 		    }))
 		.pipe(gulp.dest(dist + '/'));
 }).task('htmlDev', function () {
 	return gulp
 		.src(dir.html.dev)
 		.pipe(plugins.htmlReplace({
-				'css_normalize':'/resources/css/lib/normalize.min.css',
-				'css_common':'/resources/css/common.min.css',
-				'css_icon':'/resources/css/icon.min.css',
-				'css_main':'/resources/css/main.min.css',
-				'css_sub':'/resources/css/sub.min.css',
-				'js_jquery':'/resources/js/lib/jquery.min.js',
-				'js_html5shiv':'/resources/js/lib/html5shiv.min.js',
-				'js_function':'/resources/js/function.min.js',
-				'js_project':'/resources/js/project.min.js'
+				'css_normalize':'/pjtCom/css/lib/normalize.min.css',
+				'css_common':'/pjtCom/css/common.min.css',
+				'css_icon':'/pjtCom/css/icon.min.css',
+				'css_main':'/pjtCom/css/main.min.css',
+				'css_sub':'/pjtCom/css/sub.min.css',
+				'js_jquery':'/pjtCom/js/lib/jquery.min.js',
+				'js_html5shiv':'/pjtCom/js/lib/html5shiv.min.js',
+				'js_function':'/pjtCom/js/function.min.js',
+				'js_project':'/pjtCom/js/project.min.js'
 		    }))
 		.pipe(plugins.replace(/\.*\//g, '/')) // 모든 상대경로 -> 절대경로 변경
 		.pipe(plugins.replace(/\.html/g, '.${developFormat}')) // 링크 확장자를 html -> ${developFormat}로 변경
@@ -144,8 +144,8 @@ gulp.task('css',['cssClean', 'cssLib', 'cssCommon', 'cssSub'], function () {
 			}))
         .pipe(plugins.minifyCss()) // css파일을 minify합니다.
 		.pipe(sourcemaps.write('./sourcemaps'))  // 소스맵 저장합니다.
-		.pipe(gulp.dest(dist+'/resources/css/lib'))
-		.pipe(gulp.dest(dev+'/resources/css/lib'));
+		.pipe(gulp.dest(dist+'/pjtCom/css/lib'))
+		.pipe(gulp.dest(dev+'/pjtCom/css/lib'));
 }).task('cssCommon', function () {
 	return gulp
 		.src([dir.css.common, dir.css.main])
@@ -160,9 +160,9 @@ gulp.task('css',['cssClean', 'cssLib', 'cssCommon', 'cssSub'], function () {
 			}))
         .pipe(plugins.minifyCss())
 		.pipe(sourcemaps.write('./sourcemaps'))
-		.pipe(gulp.dest(dist+'/resources/css'))
-		.pipe(plugins.replace(/\.\./g, '/resources'))
-		.pipe(gulp.dest(dev+'/resources/css'));
+		.pipe(gulp.dest(dist+'/pjtCom/css'))
+		.pipe(plugins.replace(/\.\./g, '/pjtCom'))
+		.pipe(gulp.dest(dev+'/pjtCom/css'));
 }).task('cssSub', function () {
 	return gulp
 		.src(dir.css.sub)
@@ -178,11 +178,11 @@ gulp.task('css',['cssClean', 'cssLib', 'cssCommon', 'cssSub'], function () {
 			}))
         .pipe(plugins.minifyCss())
 		.pipe(sourcemaps.write('./sourcemaps'))
-		.pipe(gulp.dest(dist+'/resources/css'))
-		.pipe(plugins.replace(/\.\./g, '/resources')) // dev에서 절대경로로 변경
-		.pipe(gulp.dest(dev+'/resources/css'));
+		.pipe(gulp.dest(dist+'/pjtCom/css'))
+		.pipe(plugins.replace(/\.\./g, '/pjtCom')) // dev에서 절대경로로 변경
+		.pipe(gulp.dest(dev+'/pjtCom/css'));
 }).task('cssClean', function () {
-    gulp.src([dist + '/resources/css/*.css', dev + '/resources/css/*.css'])
+    gulp.src([dist + '/pjtCom/css/*.css', dev + '/pjtCom/css/*.css'])
         .pipe(plugins.clean());
 });
 
@@ -203,30 +203,30 @@ gulp.task('img', ['imgClean', 'imgSprite', 'imgMin'], function () {
 				imagemin.optipng({optimizationLevel: 5}),
 				imagemin.svgo({plugins: [{removeViewBox: true}]})
 			]))
-		.pipe(gulp.dest(dist+'/resources/images/common'))
-		.pipe(gulp.dest(dev+'/resources/images/common'));
+		.pipe(gulp.dest(dist+'/pjtCom/images/common'))
+		.pipe(gulp.dest(dev+'/pjtCom/images/common'));
 	spriteData.css
 		.pipe(sourcemaps.init())
 		.pipe(plugins.replace(/\icon-/g, '')) // Sprite과정중 생긴 icon Prefix제거
 		.pipe(plugins.replace(/url\(/g, 'url(../images/common/')) // css위치 변경으로 인한 url변경
 		.pipe(plugins.minifyCss())
 		.pipe(sourcemaps.write('./sourcemaps'))
-		.pipe(gulp.dest(dist+'/resources/css'))
-		.pipe(plugins.replace(/\.\./g, '/resources')) // dev에서 절대경로로 변경
-		.pipe(gulp.dest(dev+'/resources/css'));
+		.pipe(gulp.dest(dist+'/pjtCom/css'))
+		.pipe(plugins.replace(/\.\./g, '/pjtCom')) // dev에서 절대경로로 변경
+		.pipe(gulp.dest(dev+'/pjtCom/css'));
 }).task('imgMin', function () {
     return gulp
-		.src([dir.img.all, '!'+src+'/resources/images/common/icon'])
+		.src([dir.img.all, '!'+src+'/pjtCom/images/common/icon'])
 		.pipe(imagemin([
 				imagemin.gifsicle({interlaced: true}),
 				imagemin.jpegtran({progressive: true}),
 				imagemin.optipng({optimizationLevel: 5}),
 				imagemin.svgo({plugins: [{removeViewBox: true}]})
 			]))
-        .pipe(gulp.dest(dist+'/resources/images'))
-		.pipe(gulp.dest(dev+'/resources/images'));
+        .pipe(gulp.dest(dist+'/pjtCom/images'))
+		.pipe(gulp.dest(dev+'/pjtCom/images'));
 }).task('imgClean', function () {
-    gulp.src([dist + '/resources/images/*/*', dev + '/resources/images/*/*'])
+    gulp.src([dist + '/pjtCom/images/*/*', dev + '/pjtCom/images/*/*'])
         .pipe(plugins.clean());
 });
 
@@ -240,13 +240,13 @@ gulp.task('js', ['jsClean', 'jsLib', 'jsLint'], function () {
 			}))
         .pipe(plugins.uglify()) // src에 있는 JS파일을 minify합니다.
 		.pipe(sourcemaps.write('./sourcemaps'))
-    	.pipe(gulp.dest(dist+'/resources/js'))
-		.pipe(gulp.dest(dev+'/resources/js'));
+    	.pipe(gulp.dest(dist+'/pjtCom/js'))
+		.pipe(gulp.dest(dev+'/pjtCom/js'));
 }).task('jsLib',function () {
 	return gulp
 		.src(dir.jsLib)
-		.pipe(gulp.dest(dist+'/resources/js/lib'))
-		.pipe(gulp.dest(dev+'/resources/js/lib'));
+		.pipe(gulp.dest(dist+'/pjtCom/js/lib'))
+		.pipe(gulp.dest(dev+'/pjtCom/js/lib'));
 }).task('jsLint', function () { // JS 유효성 검사
     return gulp
 		.src(dir.js)
@@ -260,7 +260,7 @@ gulp.task('js', ['jsClean', 'jsLib', 'jsLint'], function () {
 	            reporter: require('jshint-stylish').reporter
 	        }));
 }).task('jsClean', function () {
-    gulp.src([dist + '/resources/js/*.js', dev + '/resources/js/*.js'])
+    gulp.src([dist + '/pjtCom/js/*.js', dev + '/pjtCom/js/*.js'])
         .pipe(plugins.clean());
 });
 
@@ -331,4 +331,15 @@ gulp.task('ftp', function () {
 
 /* ### Gulp실행 */
 gulp.task('default', ['git']);
-gulp.task('build', ['server'], plugins.shell.task(['gulp ftp']));
+var ftpState = ${ftpHost};
+if (ftpState === '') {
+	gulp.task('build', ['server'], function () {
+		console.log(
+			'/*****************************\n\n'+
+			'       SERVER RUN...      \n\n'+
+			'*****************************/'
+		);
+	});
+} else {
+	gulp.task('build', ['server'], plugins.shell.task(['gulp ftp']));
+}
