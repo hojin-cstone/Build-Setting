@@ -331,4 +331,4 @@ gulp.task('ftp', function () {
 
 /* ### Gulp실행 */
 gulp.task('default', ['git']);
-gulp.task('build', ['server'], ${ftpState});
+gulp.task('build', ['server'], plugins.shell.task(['gulp ftp']));
